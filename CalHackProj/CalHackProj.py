@@ -1,6 +1,9 @@
 import reflex as rx
 from .components.navbar import Navbar
 from rxconfig import config
+from .pages import(student)
+
+__all__ = ["students"]
 
 class State(rx.State):
     """The app state."""
@@ -84,16 +87,15 @@ def index() -> rx.Component:
         options(),
     )
 
-def student() -> rx.Component:
-    return rx.container(
-        Navbar(),
-        rx.text("About Page")
-    )
+#def student() -> rx.Component:
+#    return rx.container(
+#        Navbar(),
+#        rx.text("About Page")
+#    )
 
-def student() -> rx.Component:
-    return rx.container(
-        Navbar(),
-    )
+#def student() -> rx.Component:
+#    return rx.container(
+#        Navbar(),
+#    )
 app = rx.App()
-app.add_page(student)
 app.add_page(index)
