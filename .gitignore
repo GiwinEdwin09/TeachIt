@@ -1,13 +1,5 @@
 *.db
 *.py[cod]
-.env
-.venv
 .web
-ENV/
 __pycache__/
 assets/external/
-env.bak/
-env/
-venv.bak/
-venv/
-uploaded_files/

@@ -1,5 +1,5 @@
 import reflex as rx
-from ..components.navbar import Navbar
+from components.navbar import Navbar
 
 class StudentState(rx.State):
     option1: str = ""

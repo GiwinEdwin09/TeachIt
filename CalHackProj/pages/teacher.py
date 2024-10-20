@@ -1,14 +1,26 @@
 import reflex as rx
-from ..components.navbar import Navbar
-import pdfplumber
+from components.navbar import Navbar
+import os 
+from embedchain import App
+
+
+#class State(rx.State):
+#    """The app state."""
+#    ai_result: str
+
+#    def get_ai_result(self):
+#        return self.ai_result
+
+os.environ["OPENAI_API_KEY"] = ""
 
 class TeacherState(rx.State):
     img: list[str]
+    ai_result: str
 
-
+    def get_ai_result(self):
+        return self.ai_result
+    
     async def handle_upload(self, files: list[rx.UploadFile]):
-        if not files:
-            return rx.window_alert("No files selected for upload")
         for file in files:
             upload_data = await file.read()
             outfile = rx.get_upload_dir() / file.filename
@@ -17,23 +29,21 @@ class TeacherState(rx.State):
             with outfile.open("wb") as file_object:
                 file_object.write(upload_data)
 
-            if file.filename.endswith(".pdf"):
-                with pdfplumber.open(outfile) as pdf:
-                    extracted_text = ""
-                    for page in pdf.pages:
-                        extracted_text += page.extract_text()
+            # Update the img var.
+            self.img.append(file.filename)
 
-                print(f"Extracted text from {file.filename}: {extracted_text[:200]}...")
-                self.img.append(f"Extracted text from {file.filename}: {extracted_text[:200]}...")
-            
-            elif file.filename.endswith(".txt"):
-                with outfile.open("r", encoding="utf-8") as txt_file:
-                    extracted_text = txt_file.read()
+            app = App()
+            app.add(f"../uploaded_files/{file.filename}.pdf")
 
-                print(f"Extracted text from {file.filename}: {extracted_text[:200]}...")
-                self.img.append(f"Extracted text from {file.filename}: {extracted_text[:200]}...")
+            result = app.query("Make a quiz based on this")
+            print(result)
+            self.ai_result = result
+
+            print(self.ai_result)
+
 
 def learningMaterials() -> rx.Component:
+    global ai_output
     return rx.vstack(
         rx.text("Submit teaching material", font_size="2em"),
         rx.upload(
@@ -42,7 +52,11 @@ def learningMaterials() -> rx.Component:
             multiple=True,
             accept={
                 "application/pdf": [".pdf"],
-                "text": [".txt"],
+                "image/png": [".png"],
+                "image/jpeg": [".jpg", ".jpeg"],
+                "image/gif": [".gif"],
+                "image/webp": [".webp"],
+                "text/html": [".html", ".htm"],
             },
             max_files=20,
         ),
@@ -53,20 +67,19 @@ def learningMaterials() -> rx.Component:
             justify = "center",
             align = "center"
         ),
-        rx.cond(
-            rx.selected_files("upload1").length() > 0,
-            rx.button(
-                "Upload",
-                on_click=TeacherState.handle_upload(rx.upload_files(upload_id="upload1")),
-                size="4"
+        rx.button(
+            "Upload",
+            on_click=TeacherState.handle_upload(rx.upload_files(upload_id="upload1"),
             ),
-            rx.text("Please select at least one file to upload.", color="white"),
+            size="4"
         ),
         rx.button(
             "Clear",
             on_click=rx.clear_selected_files("upload1"),
             size="4"
         ),
+
+        rx.text(TeacherState.ai_result, size="4"),
         align = "center",
         justify = "center",
         padding = "5em"
