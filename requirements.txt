@@ -17,3 +17,5 @@ schema==0.7.7
 tiktoken==0.7.0
 uvloop==0.21.0
 watchfiles==0.24.0
+
+reflex==0.6.3

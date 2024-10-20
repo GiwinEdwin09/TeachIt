@@ -6,7 +6,7 @@ from pathlib import Path
 from pydantic import BaseModel
 import re
 import json
-
+from sqlmodel import select
 # Set your OpenAI API key
 openai.api_key = ""
 
@@ -74,24 +74,12 @@ class TeacherState(rx.State):
             self.ai_result = result
             
             quiz_data = json.loads(result)
-
             output_string = ""
-
             for question in quiz_data['fullQuiz']:
                 question_num = question['question_num']
                 question_text = question['question']
                 answers = question['answers']
                 correct_answer = answers[question['answerIndex']]
-                
-                print(file.filename)
-                print(question_num)
-                print(question_text)
-                print(answers[0])
-                print(answers[1])
-                print(answers[2])
-                print(answers[3])
-                print(question['answerIndex'])
-                print(self.file_learning_styles[file.filename])
                 with rx.session() as session:
                     db_entry = QuizModel(
                         fileName = file.filename,
@@ -106,7 +94,7 @@ class TeacherState(rx.State):
                     )
                     session.add(db_entry)
                     session.commit()
-                    yield
+                    
                     
                 # Create a formatted string for each question
                 output_string += f"Question {question_num}: {question_text}\n"
@@ -115,7 +103,8 @@ class TeacherState(rx.State):
                     letter = chr(97 + i)  # 97 is the ASCII code for 'a'
                     output_string += f"  {letter}. {answer}\n"
                 output_string += f"Correct Answer: {correct_answer}\n\n"
-            
+
+
             self.resultFinal = output_string
             print("end")
             self.show_success_alert()

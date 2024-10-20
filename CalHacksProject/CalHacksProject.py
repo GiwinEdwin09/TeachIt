@@ -46,7 +46,7 @@ def options() -> rx.Component:
                         padding_x="1.5em",
                         padding_y="0.5em",
                     ), 
-                    href="/student"
+                    href="/studentQuiz"
                 ),
                 
                 

@@ -1,10 +1,10 @@
 *.db
 *.py[cod]
+.venv
 .web
 __pycache__/
-assets/external/
-.venv
-uploaded_files/
-db/
-alembic/
 alembic.ini
+alembic/
+assets/external/
+db/
+uploaded_files/
