@@ -6,11 +6,19 @@ class StudentState(rx.State):
     option2: str = ""
     option3: str = ""
 
-    def submit(self):
-        print("Visual: " + self.option1)
-        print("Audio: " + self.option2)
-        print("Interactive: " + self.option3)
+    visTrue: bool = False
+    AudTrue: bool = False
+    HandTrue: bool = False
 
+    def submit(self):
+        if self.option1 == "yes":
+            self.visTrue = True
+        if self.option2 == "yes":
+            self.AudTrue = True
+        if self.option3 == "yes":
+            self.HandTrue = True
+
+        return rx.redirect('/studentLearn')
 
     def set_option1(self, value: str):
         self.option1 = value
@@ -81,5 +89,5 @@ def learningMethods() -> rx.Component:
 def student():
     return rx.container(
         Navbar(),
-        learningMethods()
+        learningMethods(),
     )

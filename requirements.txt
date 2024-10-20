@@ -1,13 +1,12 @@
 beautifulsoup4==4.12.3
-distro==1.9.0
+chromadb==0.4.24
 google-cloud-aiplatform==1.70.0
 gptcache==0.1.44
 grpcio-status==1.62.3
 h2==4.1.0
 httptools==0.6.4
-jiter==0.6.1
 langchain-cohere==0.3.1
-openai==0.28.0
+openai==1.52.0
 pdfplumber==0.11.4
 pip-check==2.9
 pypdf==5.0.1
@@ -17,5 +16,3 @@ schema==0.7.7
 tiktoken==0.7.0
 uvloop==0.21.0
 watchfiles==0.24.0
-
-reflex==0.6.3

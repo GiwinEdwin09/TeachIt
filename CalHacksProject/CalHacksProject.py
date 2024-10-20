@@ -1,9 +1,9 @@
 import reflex as rx
 from .components.navbar import Navbar
 from rxconfig import config
-from .pages import(student, teacher)
+from .pages import(student, teacher, studentLearn, practice)
 
-__all__ = ["student", "teacher"]
+__all__ = ["student", "teacher", "studentLearn", "practice"]
 
 class State(rx.State):
     """The app state."""
@@ -46,7 +46,7 @@ def options() -> rx.Component:
                         padding_x="1.5em",
                         padding_y="0.5em",
                     ), 
-                    href="/studentQuiz"
+                    href="/student"
                 ),
                 
                 
