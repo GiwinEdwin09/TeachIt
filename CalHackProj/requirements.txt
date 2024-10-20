@@ -1,0 +1,5 @@
+embedchain==0.1.123
+grpcio-status==1.62.3
+h2==4.1.0
+httptools==0.6.4
+watchfiles==0.24.0

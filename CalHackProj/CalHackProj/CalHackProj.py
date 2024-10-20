@@ -1,7 +1,8 @@
 import reflex as rx
 from components.navbar import Navbar
 from rxconfig import config
-from pages import(student, teacher)
+from pages.student import student
+from pages.contact import contact_page
 
 __all__ = ["student", "teacher"]
 
@@ -90,3 +91,4 @@ def index() -> rx.Component:
 
 app = rx.App()
 app.add_page(index)
+app.add_page(contact_page)
