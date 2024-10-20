@@ -22,8 +22,14 @@ class Quiz(BaseModel):
 
 class TeacherState(rx.State):
     img: list[str] = []
-    ai_result: list[tuple[int, str, list[str], int]] = []  # Changed this to store the tuple list
+    ai_result: list[tuple[int, str, list[str], int]] = []
     resultFinal: str = ""
+    file_learning_styles: dict[str, str] = {}
+
+    def set_learning_style(self, filename: str, style: str):
+        self.file_learning_styles[filename] = style
+
+
     def get_ai_result(self):
         return self.ai_result
 
@@ -108,7 +114,15 @@ def learningMaterials() -> rx.Component:
         ),
         rx.vstack(
             rx.foreach(
-                rx.selected_files("upload1"), rx.text
+                rx.selected_files("upload1"),
+                lambda file: rx.hstack(
+                    rx.text(file),
+                    rx.select(
+                        ["Visual", "Audio", "Hands On"],
+                        placeholder="Select learning style",
+                        on_change=lambda value: TeacherState.set_learning_style(file, value),
+                    ),
+                )
             ),
             justify="center",
             align="center"
