@@ -6,3 +6,5 @@ assets/external/
 .venv
 uploaded_files/
 db/
+alembic/
+alembic.ini

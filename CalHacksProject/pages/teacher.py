@@ -10,6 +10,17 @@ import json
 # Set your OpenAI API key
 openai.api_key = ""
 
+class QuizModel(rx.Model, table =  True):
+    fileName: str
+    questNum: int
+    quest: str
+    answOne: str
+    answTwo: str
+    answThree: str
+    answFour: str
+    ansInd:int
+    typeOf: str
+
 class QuizFormat(BaseModel):
     question_num: int
     question:str
@@ -25,6 +36,13 @@ class TeacherState(rx.State):
     ai_result: list[tuple[int, str, list[str], int]] = []
     resultFinal: str = ""
     file_learning_styles: dict[str, str] = {}
+    show_alert: bool = False
+
+    def show_success_alert(self):
+        self.show_alert = True
+
+    def hide_success_alert(self):
+        self.show_alert = False
 
     def set_learning_style(self, filename: str, style: str):
         self.file_learning_styles[filename] = style
@@ -50,7 +68,7 @@ class TeacherState(rx.State):
             extracted_text = self.extract_text_from_pdf(outfile)
 
             # Query OpenAI with the extracted text and specific prompt
-            result = await self.query_openai(extracted_text, "Make a 10 question multiple-choice quiz based on the content of the pdf file.")
+            result = await self.query_openai(extracted_text, "Make a 10 question multiple-choice quiz based on the content of the pdf file. Each question should have 4 choices.")
             
             # Parse the result into a structured format
             self.ai_result = result
@@ -65,6 +83,31 @@ class TeacherState(rx.State):
                 answers = question['answers']
                 correct_answer = answers[question['answerIndex']]
                 
+                print(file.filename)
+                print(question_num)
+                print(question_text)
+                print(answers[0])
+                print(answers[1])
+                print(answers[2])
+                print(answers[3])
+                print(question['answerIndex'])
+                print(self.file_learning_styles[file.filename])
+                with rx.session() as session:
+                    db_entry = QuizModel(
+                        fileName = file.filename,
+                        questNum = question_num,
+                        quest = question_text,
+                        answOne = answers[0],
+                        answTwo = answers[1],
+                        answThree = answers[2],
+                        answFour = answers[3],
+                        ansInd = question['answerIndex'],
+                        typeOf = self.file_learning_styles[file.filename]
+                    )
+                    session.add(db_entry)
+                    session.commit()
+                    yield
+                    
                 # Create a formatted string for each question
                 output_string += f"Question {question_num}: {question_text}\n"
                 for i, answer in enumerate(answers):
@@ -75,6 +118,7 @@ class TeacherState(rx.State):
             
             self.resultFinal = output_string
             print("end")
+            self.show_success_alert()
 
     def extract_text_from_pdf(self, pdf_path: Path) -> str:
         """Extracts text from the given PDF file using pdfplumber."""
@@ -142,6 +186,26 @@ def learningMaterials() -> rx.Component:
             size="4"
         ),
         rx.text(TeacherState.resultFinal, size="4"),
+        rx.alert_dialog.root(
+            rx.alert_dialog.content(
+                rx.alert_dialog.title("Upload Successful"),
+                rx.alert_dialog.description(
+                    "Your files have been uploaded successfully.",
+                    size="2",
+                ),
+                rx.flex(
+                    rx.alert_dialog.action(
+                        rx.button(
+              
+              "OK",
+                            on_click=TeacherState.hide_success_alert,
+                        ),
+                    ),
+                    justify="end",
+                ),
+            ),
+            open=TeacherState.show_alert,
+        ),
         align="center",
         justify="center",
         padding="5em"
